@@ -1,7 +1,6 @@
 package com.zhouwei.myapplication.eventbus_;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -20,7 +19,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         setContent();
         if (isRegisterEventBus()) {
             EventBusEngine.register(this);
-            handler = new Handler(getMainLooper());
         }
 
         if (layout != -1) {
