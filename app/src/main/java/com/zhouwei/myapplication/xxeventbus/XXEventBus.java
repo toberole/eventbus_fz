@@ -21,43 +21,44 @@ public class XXEventBus {
     private AsyThreadHandler asyThreadHandler = new AsyThreadHandler(this);
 
     public void register(Object subscriber) {
-        Class clazz = subscriber.getClass();
-        Method[] methods = clazz.getMethods();
+        if (!isRegistered(subscriber)) {
+            Class clazz = subscriber.getClass();
+            Method[] methods = clazz.getMethods();
 
-        for (Method method : methods) {
-            Subscribe annotation = method.getAnnotation(Subscribe.class);
-            if (null != annotation) {
-                ThreadMode threadMode = annotation.tm();
-                Class[] params = method.getParameterTypes();
-                ArrayList<Subscription> subscriptions;
-                if (subscriptionsWithEvent.containsKey(params[0])) {
-                    subscriptions = subscriptionsWithEvent.get(params[0]);
-                } else {
-                    subscriptions = new ArrayList<>();
+            for (Method method : methods) {
+                Subscribe annotation = method.getAnnotation(Subscribe.class);
+                if (null != annotation) {
+                    ThreadMode threadMode = annotation.tm();
+                    Class[] params = method.getParameterTypes();
+                    ArrayList<Subscription> subscriptions;
+                    if (subscriptionsWithEvent.containsKey(params[0])) {
+                        subscriptions = subscriptionsWithEvent.get(params[0]);
+                    } else {
+                        subscriptions = new ArrayList<>();
+                    }
+
+                    Subscription sub = null;
+                    if (threadMode == ThreadMode.MAIN) {
+                        sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], 1));
+                    } else if (threadMode == ThreadMode.BACKGROUND) {
+                        sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], 0));
+                    }
+
+                    subscriptions.add(sub);
+                    subscriptionsWithEvent.put(params[0], subscriptions);
                 }
-
-                Subscription sub = null;
-                if (threadMode == ThreadMode.MAIN) {
-                    sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], 1));
-                } else if (threadMode == ThreadMode.BACKGROUND) {
-                    sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], 0));
-                }
-
-                subscriptions.add(sub);
-                subscriptionsWithEvent.put(params[0], subscriptions);
             }
         }
     }
 
-    public void unRegister(Object subscription) {
+    public void unRegister(Object subscriber) {
         synchronized (subscriptionsWithEvent) {
             for (Map.Entry<Class, ArrayList<Subscription>> en : subscriptionsWithEvent.entrySet()) {
-                Class clazz = en.getKey();
                 ArrayList<Subscription> subscriptions = en.getValue();
 
                 ArrayList<Subscription> dels = new ArrayList<>();
                 for (Subscription sub : subscriptions) {
-                    if (sub.subscriber == subscription) {
+                    if (sub.subscriber == subscriber) {
                         dels.add(sub);
                     }
                 }
@@ -65,6 +66,23 @@ public class XXEventBus {
                 subscriptions.removeAll(dels);
             }
         }
+    }
+
+    public boolean isRegistered(Object subscriber) {
+        boolean isRegistered = false;
+        for (Map.Entry<Class, ArrayList<Subscription>> en : subscriptionsWithEvent.entrySet()) {
+            ArrayList<Subscription> subscriptions = en.getValue();
+
+            for (Subscription sub : subscriptions) {
+                if (sub.subscriber == subscriber) {
+                    isRegistered = true;
+                }
+            }
+
+            if (isRegistered) return isRegistered;
+        }
+
+        return isRegistered;
     }
 
     public void post(Object event) {
