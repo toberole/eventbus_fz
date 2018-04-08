@@ -1,8 +1,9 @@
-package com.zhouwei.myapplication;
+package com.zhouwei.myapplication.activity;
 
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.zhouwei.myapplication.R;
 import com.zhouwei.myapplication.eventbus_.BaseActivity;
 
 /**

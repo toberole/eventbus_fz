@@ -1,9 +1,12 @@
-package com.zhouwei.myapplication;
+package com.zhouwei.myapplication.activity;
 
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.zhouwei.myapplication.R;
+import com.zhouwei.myapplication.Student;
+import com.zhouwei.myapplication.UpdateInfo;
 import com.zhouwei.myapplication.eventbus_.BaseActivity;
 import com.zhouwei.myapplication.eventbus_.EventBusEngine;
 import com.zhouwei.myapplication.eventbus_.EventCode;
