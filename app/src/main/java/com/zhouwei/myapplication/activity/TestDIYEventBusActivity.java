@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.zhouwei.myapplication.R;
-import com.zhouwei.myapplication.xxeventtbus.XXEventBus;
+import com.zhouwei.myapplication.xxeventbus.XXEventBus;
 
 /**
  * Created by Charles on 2018/4/8.

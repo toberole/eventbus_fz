@@ -1,4 +1,4 @@
-package com.zhouwei.myapplication.xxeventtbus;
+package com.zhouwei.myapplication.xxeventbus;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

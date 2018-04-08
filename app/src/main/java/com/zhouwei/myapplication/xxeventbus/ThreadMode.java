@@ -1,4 +1,4 @@
-package com.zhouwei.myapplication.xxeventtbus;
+package com.zhouwei.myapplication.xxeventbus;
 
 /**
  * Created by Charles on 2018/4/8.
