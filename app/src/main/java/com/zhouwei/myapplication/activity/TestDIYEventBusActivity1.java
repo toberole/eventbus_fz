@@ -8,9 +8,9 @@ import android.view.View;
 import android.widget.Button;
 
 import com.zhouwei.myapplication.R;
-import com.zhouwei.myapplication.diy_eventtbus.XXEventBus;
-import com.zhouwei.myapplication.diy_eventtbus.Subscribe;
-import com.zhouwei.myapplication.diy_eventtbus.ThreadMode;
+import com.zhouwei.myapplication.xxeventtbus.XXEventBus;
+import com.zhouwei.myapplication.xxeventtbus.Subscribe;
+import com.zhouwei.myapplication.xxeventtbus.ThreadMode;
 
 /**
  * Created by Charles on 2018/4/8.

@@ -1,4 +1,4 @@
-package com.zhouwei.myapplication.diy_eventtbus;
+package com.zhouwei.myapplication.xxeventtbus;
 
 import android.os.Handler;
 import android.os.Looper;
