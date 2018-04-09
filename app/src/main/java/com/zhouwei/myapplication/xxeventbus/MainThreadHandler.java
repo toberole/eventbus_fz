@@ -10,11 +10,10 @@ import android.os.Message;
 
 public class MainThreadHandler extends Handler {
     public XXEventBus eventBus;
-    public Looper looper;
 
     public MainThreadHandler(XXEventBus eventBus, Looper looper) {
+        super(looper);
         this.eventBus = eventBus;
-        this.looper = looper;
     }
 
     @Override

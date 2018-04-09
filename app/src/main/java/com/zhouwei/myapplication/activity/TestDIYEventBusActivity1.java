@@ -29,7 +29,12 @@ public class TestDIYEventBusActivity1 extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                XXEventBus.getInstance().post("测试 DIY EventBus");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        XXEventBus.getInstance().post("测试 DIY EventBus");
+                    }
+                }).start();
             }
         });
 
@@ -41,9 +46,9 @@ public class TestDIYEventBusActivity1 extends Activity {
         });
     }
 
-    @Subscribe(tm = ThreadMode.BACKGROUND)
+    @Subscribe(tm = ThreadMode.MAIN)
     public void onEvent(String event) {
-        Log.i("AAAA", "event: " + event);
+        Log.i("AAAA", "event: " + event + " Thread name: " + Thread.currentThread().getName());
     }
 
     @Override
