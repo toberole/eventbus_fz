@@ -24,7 +24,7 @@ public class XXEventBus {
         synchronized (subscriptionsWithEvent) {
             if (!isRegistered(subscriber)) {
                 Class clazz = subscriber.getClass();
-                Method[] methods = clazz.getMethods();
+                Method[] methods = clazz.getDeclaredMethods();
 
                 for (Method method : methods) {
                     Subscribe annotation = method.getAnnotation(Subscribe.class);
@@ -40,9 +40,9 @@ public class XXEventBus {
 
                         Subscription sub = null;
                         if (threadMode == ThreadMode.MAIN) {
-                            sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], 1));
+                            sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], ThreadMode.MAIN));
                         } else if (threadMode == ThreadMode.BACKGROUND) {
-                            sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], 0));
+                            sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], ThreadMode.BACKGROUND));
                         }
 
                         subscriptions.add(sub);
@@ -92,7 +92,7 @@ public class XXEventBus {
         ArrayList<Subscription> subscriptions = subscriptionsWithEvent.get(clazz);
         if (null != subscriptions && subscriptions.size() > 0) {
             for (Subscription subscription : subscriptions) {
-                if (subscription.subscriberMethod.flag == 0) {
+                if (subscription.subscriberMethod.flag == ThreadMode.BACKGROUND) {
                     asyThreadHandler.post(subscription, event);
                 } else {
                     mainThreadHandler.post(subscription, event);
@@ -101,19 +101,19 @@ public class XXEventBus {
         }
     }
 
-    public static XXEventBus getInstance() {
-        return XXEventBusHolder.instance;
-    }
-
-    private XXEventBus() {
-    }
-
     public void invoke(Subscription subscription, Method method, Object event) {
         try {
             method.invoke(subscription.subscriber, event);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static XXEventBus getInstance() {
+        return XXEventBusHolder.instance;
+    }
+
+    private XXEventBus() {
     }
 
     private static class XXEventBusHolder {
