@@ -3,6 +3,7 @@ package com.zhouwei.myapplication.xxeventbus;
 import android.os.Looper;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,29 +25,37 @@ public class XXEventBus {
         synchronized (subscriptionsWithEvent) {
             if (!isRegistered(subscriber)) {
                 Class clazz = subscriber.getClass();
-                Method[] methods = clazz.getDeclaredMethods();
+                Method[] methods = clazz.getMethods();
 
                 for (Method method : methods) {
-                    Subscribe annotation = method.getAnnotation(Subscribe.class);
-                    if (null != annotation) {
-                        ThreadMode threadMode = annotation.tm();
-                        Class[] params = method.getParameterTypes();
-                        ArrayList<Subscription> subscriptions;
-                        if (subscriptionsWithEvent.containsKey(params[0])) {
-                            subscriptions = subscriptionsWithEvent.get(params[0]);
-                        } else {
-                            subscriptions = new ArrayList<>();
-                        }
+                    int modifiers = method.getModifiers();
+                    // 判断修饰符 被回调的方法必须是Public，不能是 static, abstract
+                    if ((modifiers & Modifier.ABSTRACT) == 0 && (modifiers & Modifier.STATIC) == 0) {
+                        Class<?>[] parameterTypes = method.getParameterTypes();
+                        // 参数只能是一个 被注册的事件
+                        if (parameterTypes != null && parameterTypes.length == 1) {
+                            Subscribe annotation = method.getAnnotation(Subscribe.class);
+                            if (null != annotation) {
+                                ThreadMode threadMode = annotation.tm();
+                                Class[] params = method.getParameterTypes();
+                                ArrayList<Subscription> subscriptions;
+                                if (subscriptionsWithEvent.containsKey(params[0])) {
+                                    subscriptions = subscriptionsWithEvent.get(params[0]);
+                                } else {
+                                    subscriptions = new ArrayList<>();
+                                }
 
-                        Subscription sub = null;
-                        if (threadMode == ThreadMode.MAIN) {
-                            sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], ThreadMode.MAIN));
-                        } else if (threadMode == ThreadMode.BACKGROUND) {
-                            sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], ThreadMode.BACKGROUND));
-                        }
+                                Subscription sub = null;
+                                if (threadMode == ThreadMode.MAIN) {
+                                    sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], ThreadMode.MAIN));
+                                } else if (threadMode == ThreadMode.BACKGROUND) {
+                                    sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], ThreadMode.BACKGROUND));
+                                }
 
-                        subscriptions.add(sub);
-                        subscriptionsWithEvent.put(params[0], subscriptions);
+                                subscriptions.add(sub);
+                                subscriptionsWithEvent.put(params[0], subscriptions);
+                            }
+                        }
                     }
                 }
             }
