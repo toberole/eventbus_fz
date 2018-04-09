@@ -29,10 +29,11 @@ public class TestDIYEventBusActivity1 extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                XXEventBus.getInstance().post("主线程 测试 DIY EventBus");
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        XXEventBus.getInstance().post("测试 DIY EventBus");
+                        XXEventBus.getInstance().post("非主线程 测试 DIY EventBus");
                     }
                 }).start();
             }

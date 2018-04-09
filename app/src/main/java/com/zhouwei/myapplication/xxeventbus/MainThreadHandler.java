@@ -28,6 +28,14 @@ public class MainThreadHandler extends Handler {
         this.subscription = subscription;
         this.event = event;
 
-        sendEmptyMessage(0);
+        if (isMainThread()) {
+            XXEventBus.getInstance().invoke(subscription, subscription.subscriberMethod.method, event);
+        } else {
+            sendEmptyMessage(0);
+        }
+    }
+
+    private boolean isMainThread() {
+        return Looper.myLooper() == Looper.getMainLooper();
     }
 }
