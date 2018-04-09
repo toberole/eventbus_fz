@@ -8,8 +8,8 @@ package com.zhouwei.myapplication.xxeventbus;
  * 事件订阅者 包装类
  */
 public class Subscription {
-    public Object subscriber;
-    public SubscriberMethod subscriberMethod;
+    public Object subscriber;// 实际的观察者
+    public SubscriberMethod subscriberMethod;// 观察者里面被回调的方法
 
     public Subscription(Object subscriber, SubscriberMethod subscriberMethod) {
         this.subscriber = subscriber;

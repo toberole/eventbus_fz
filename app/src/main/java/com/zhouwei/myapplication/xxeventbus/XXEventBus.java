@@ -21,31 +21,33 @@ public class XXEventBus {
     private AsyThreadHandler asyThreadHandler = new AsyThreadHandler(this);
 
     public void register(Object subscriber) {
-        if (!isRegistered(subscriber)) {
-            Class clazz = subscriber.getClass();
-            Method[] methods = clazz.getMethods();
+        synchronized (subscriptionsWithEvent) {
+            if (!isRegistered(subscriber)) {
+                Class clazz = subscriber.getClass();
+                Method[] methods = clazz.getMethods();
 
-            for (Method method : methods) {
-                Subscribe annotation = method.getAnnotation(Subscribe.class);
-                if (null != annotation) {
-                    ThreadMode threadMode = annotation.tm();
-                    Class[] params = method.getParameterTypes();
-                    ArrayList<Subscription> subscriptions;
-                    if (subscriptionsWithEvent.containsKey(params[0])) {
-                        subscriptions = subscriptionsWithEvent.get(params[0]);
-                    } else {
-                        subscriptions = new ArrayList<>();
+                for (Method method : methods) {
+                    Subscribe annotation = method.getAnnotation(Subscribe.class);
+                    if (null != annotation) {
+                        ThreadMode threadMode = annotation.tm();
+                        Class[] params = method.getParameterTypes();
+                        ArrayList<Subscription> subscriptions;
+                        if (subscriptionsWithEvent.containsKey(params[0])) {
+                            subscriptions = subscriptionsWithEvent.get(params[0]);
+                        } else {
+                            subscriptions = new ArrayList<>();
+                        }
+
+                        Subscription sub = null;
+                        if (threadMode == ThreadMode.MAIN) {
+                            sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], 1));
+                        } else if (threadMode == ThreadMode.BACKGROUND) {
+                            sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], 0));
+                        }
+
+                        subscriptions.add(sub);
+                        subscriptionsWithEvent.put(params[0], subscriptions);
                     }
-
-                    Subscription sub = null;
-                    if (threadMode == ThreadMode.MAIN) {
-                        sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], 1));
-                    } else if (threadMode == ThreadMode.BACKGROUND) {
-                        sub = new Subscription(subscriber, new SubscriberMethod(method, params[0], 0));
-                    }
-
-                    subscriptions.add(sub);
-                    subscriptionsWithEvent.put(params[0], subscriptions);
                 }
             }
         }
