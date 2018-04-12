@@ -1,7 +1,5 @@
 package com.zhouwei.myapplication.xxeventbus;
 
-import android.os.Looper;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ public class XXEventBus {
     // class 事件类 ；ArrayList<Subscription> 订阅了某一个事件的所有观察者的集合
     private Map<Class, ArrayList<Subscription>> subscriptionsWithEvent = new ConcurrentHashMap<>();
 
-    private MainThreadHandler mainThreadHandler = new MainThreadHandler(this, Looper.getMainLooper());
+    private MainThreadHandler mainThreadHandler = new MainThreadHandler(this);
 
     private AsyThreadHandler asyThreadHandler = new AsyThreadHandler(this);
 

@@ -11,8 +11,8 @@ import android.os.Message;
 public class MainThreadHandler extends Handler {
     public XXEventBus eventBus;
 
-    public MainThreadHandler(XXEventBus eventBus, Looper looper) {
-        super(looper);
+    public MainThreadHandler(XXEventBus eventBus) {
+        super(Looper.getMainLooper());
         this.eventBus = eventBus;
     }
 
